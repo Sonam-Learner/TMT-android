@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">TMT</string>
+    <string name="main_activity_heading">My activity for the day</string>
+    <string name = "add_activity_textview">Add Activity</string>
+    <string name="pie">Pie</string>
+    <string name="activity_Name">Activity Name</string>
+    <string name="activity_category">Category</string>
+
+    <string-array name="categories">
+        <item>Sleeping</item>
+        <item>Entertainment</item>
+        <item>Study</item>
+        <item>Eating</item>
+        <item>Exercise</item>
+        <item>Others</item>
+    </string-array>
+</resources>

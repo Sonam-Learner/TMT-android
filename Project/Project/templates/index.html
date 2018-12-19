@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Index Page</title>
+	<!-- <script type="text/javascript" src="catalog.json"></script> -->
+	<!-- <script type="text/javascript" src="index.js"></script> -->
+	<script type="text/javascript" src="/static/project.js"></script>
+	<script type = "text/javascript" 
+         src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js">
+    </script>
+    <link rel="stylesheet" type="text/css" href="/static/index.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+	<div class="container">
+		<span><input type="image" src="/static/images/checkout.png" height="50px" onclick=""><b>Cart</b> </span>
+		<h2>Problem Solving Book</h2>
+		<div class="row">
+			<div class="col-sm-6" id="left">
+				<div id="left1">
+					<div id="left10" class="col-sm-4"> <img src="" class="responsive" id="image"> </div>
+					<div id="left11" class="col-sm-8">
+						<b>Author:</b><p id="author"><hr></p>
+						<b>Price:</b><p id="price"><hr></p>
+						<b>Publisher:</b><p id="publisher"><hr></p> 
+						<b>Year of Pub.:</b><p id="year"></p>
+					</div>
+				</div>
+				<div id="left2" >
+					&nbsp;
+					<p>
+					<button type="button" class="btn btn-default" id="Btn1" onclick="myPrevious()">Previous</button> &nbsp;&nbsp;
+					
+					<button type="button" class="btn btn-default" id="Btn2"  onclick="myNext()">Next</button>
+				    </p>
+				</div>
+				<div id="left4">
+					<p><b>Shopping Cart</b></p> 
+					<div class="col-sm-12">
+						<form action="/checkout/" method="POST">
+							<input type="image" src="/static/images/buy.png"> 
+						</form>
+						
+					</div>
+					<div class="col-sm-12">
+						<input type="image" src="/static/images/cart.png" onclick="myCart()"> 
+					</div>
+										
+				</div>
+				<div id="left3">
+					<b>Web Page Designed by:</b>
+					<p> 1. Samal Rai  &nbsp; <b>Email_Id</b>= samal@gmail.com
+					</p><p> 2. Sonam Wangmo  &nbsp;<b>Email_Id</b>=sonamwangmocst@gmail.com</p>
+				</div>
+			</div>
+			<div class="col-sm-6" id="right">
+				<div id="right1">
+					<b><p id="title"></p></b>
+				</div>
+				<div id="right2">
+					<b>Description</b>
+					<p id="describe"></p>
+				</div>
+				<div id="right3">
+					<p><a href="" id="anchor" target="_blank">Book Preview Link here </a></p>					
+				</div>
+				
+			</div>
+		</div>
+		<p></p>
+		
+	</div>
+</body>
+</html>

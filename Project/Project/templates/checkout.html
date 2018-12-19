@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Checkout Page</title>
+    <link rel="stylesheet" type="text/css" href="/static/index.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+	<div class="container">
+			<div class="col-sm-6" id="myleft">
+				<legend>Checkout</legend>
+				{%set total=0 |int%}
+				 <table style="border: 1px;">
+				   		<tr>
+				   			<th>Book Name</th>
+				   			<th>Price</th>
+				   			<th>Quantity</th>
+				   			<th>Total</th>
+				   			
+				   		</tr>
+				   		
+				   		{% for key,value in parent_dict.items()  %}
+				   			{%set pric=value[2]|int %}
+				   			{%set qty=value[0]|int %}
+				   			{%set total1=(pric*qty) |int%}
+				   			{%set total=total+total1 |int%}
+				   			
+				   		<tr>
+				   			<td>{{value[1]}}</td>
+				   			<td>{{pric}}</td>
+				   			<td>{{qty}}</td>
+				   			<td>{{(pric * qty)}}</td>
+				   			
+				   		</tr>
+
+				   		{% endfor %}
+				   		<tr>
+				   			<td>Grand Total</td>
+				   			<td colspan="{{3}}">{{ total }}</td>
+				   		</tr>
+				   </table> <br>
+			</div>
+			<div class="col-sm-6" id="myright">
+				<fieldset>
+				<legend>Place Order</legend>
+				<form action="/placeOrder/" method="POST">
+					Name: <input type="text" name="name"><br> <br>
+					Phone Number: <input type="text" name="Mobile"> <br> <br>
+					<input type="submit" value="Place Order"> <br> <br>
+				</form>
+				</fieldset>
+							
+			</div>			
+	</div>
+</body>
+</html>

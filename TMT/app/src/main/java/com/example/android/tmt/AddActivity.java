@@ -2,6 +2,7 @@ package com.example.android.tmt;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
@@ -24,7 +25,10 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.w3c.dom.Text;
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.text.ParseException;
 import java.util.Calendar;
 import android.database.Cursor;
 
@@ -47,7 +51,7 @@ public class AddActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener mDateSetListener;
     private Button mShow;
 
-
+    private int mRating=DatabaseHelper.RATING_HAPPY;
     DatabaseHelper myDb;
 
 
@@ -69,7 +73,6 @@ public class AddActivity extends AppCompatActivity {
         mETime=(TextView) findViewById(R.id.e_val);
         mRadioGroup=(RadioGroup) findViewById(R.id.rGroup);
         mAdd=(Button) findViewById(R.id.submit);
-
         AddData();
 
 //        setCurrentTimeOnView(); For Time Picker
@@ -103,9 +106,10 @@ public class AddActivity extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month + 1;
+                String date=String.format("%d-%02d-%02d", year, month, day);
 //                Log.d(TAG, "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
 
-                String date = month + "-" + day + "-" + year;
+//                String date =  year + "-" +month  + "-" +day;
                 mDisplayDate1.setText(date);
             }
         };
@@ -177,6 +181,7 @@ public class AddActivity extends AppCompatActivity {
                 timePickerDialog.show();
             }
         });
+
     }
 
     public void AddData(){
@@ -189,19 +194,57 @@ public class AddActivity extends AppCompatActivity {
 
                 }
                 else{
-                    int selectedId = mRadioGroup.getCheckedRadioButtonId();
-                    radioButton = (RadioButton) findViewById(selectedId);
+                    int selectedId=mRadioGroup.getCheckedRadioButtonId();
+                    radioButton=(RadioButton)findViewById(selectedId);
+                    String rating=radioButton.getText().toString().trim();
 
-                boolean isInserted = myDb.insertData(mCategory.getSelectedItem().toString(), mDate.getText().toString(), mSTime.getText().toString(), mETime.getText().toString(), radioButton.getText().toString());
-                if (isInserted = true)
-                    Toast.makeText(AddActivity.this, "Your Activity is recorded", Toast.LENGTH_LONG).show();
-                else
-                    Toast.makeText(AddActivity.this, "Sorry! Your Activity is not recorded. Try Again", Toast.LENGTH_LONG).show();
+                    if (rating.equals("Sad")){
+                        mRating=DatabaseHelper.RATING_SAD;
+                    }
+                    else if(rating.equals("Happy")){
+                        mRating=DatabaseHelper.RATING_HAPPY;
+                    }
+                    else  mRating=DatabaseHelper.RATING_OKEY;
+
+                    if (validateTime())
+                    {boolean isInserted = myDb.insertData(mCategory.getSelectedItem().toString(), mDate.getText().toString(), mSTime.getText().toString(), mETime.getText().toString(), String.valueOf(mRating));
+                        if (isInserted = true){
+                            Toast.makeText(AddActivity.this, "Your Activity is recorded", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(AddActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
+
+                        else
+                            Toast.makeText(AddActivity.this, "Sorry! Your Activity is not recorded. Try Again", Toast.LENGTH_LONG).show();
+                    }
+                    else{
+                        Toast.makeText(AddActivity.this, "Wrong time setting", Toast.LENGTH_LONG).show();
+                    }
+
+
             }
 
             }
         });
     }
+    public boolean validateTime() {
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        String stime = mSTime.getText().toString();
+        String etime = mETime.getText().toString();
+
+        Date mystime = null;
+        Date myetime = null;
+        try {
+            mystime = formatter.parse(stime);
+            myetime = formatter.parse(etime);
+            if (myetime.after(mystime) && myetime.compareTo(mystime)!=0) return true;
+            else return false;
+        } catch (ParseException e) {
+            Log.v("TIme", e.toString());
+            return false;
+        }
+    }
+
     public boolean checkDataEntered(){
         if (mDate.getText().toString().isEmpty()){
             return false;

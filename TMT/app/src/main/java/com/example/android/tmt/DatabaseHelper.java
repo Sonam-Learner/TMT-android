@@ -5,6 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import android.widget.TextView;
+import java.util.Calendar;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.text.ParseException;
+
+
+import static android.content.ContentValues.TAG;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME="User.db";
@@ -12,11 +23,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String Col_1="ID";
     public static final String Col_2="Category";
-    public static final String Col_3="Date";
+    public static final String Col_3="date";
     public static final String Col_4="S_Time";
     public static final String Col_5="E_Time";
     public static final String Col_6="Rating";
 
+    public static final int RATING_SAD=1;
+    public static final int RATING_HAPPY=3;
+    public static final int RATING_OKEY=2;
 
 
     public DatabaseHelper( Context context) {
@@ -26,7 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Category TEXT, Date TEXT, S_Time TEXT, E_Time TEXT, Rating TEXT)");
+        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Category TEXT, date TEXT, S_Time TEXT, E_Time TEXT, Rating Integer)");
 
     }
 
@@ -51,10 +65,59 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
 
     }
+
     public Cursor getData(){
-        SQLiteDatabase db=this.getReadableDatabase();
-        String[] column = {Col_2,Col_4,Col_5,Col_6};
-        Cursor cursor = db.query(TABLE_NAME,column,null,null,null,null,null);
-        return cursor;
+        Log.v(TAG,"entered");
+        SQLiteDatabase db1=this.getReadableDatabase();
+//        to get today's date
+        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+//        String[] projection={Col_2,Col_3,Col_4,Col_5};
+
+        String[] selectionArgs =new String[]{today};
+        String queryString = "SELECT Category, SUM((strftime('%s',e_time)-strftime('%s',s_time))/60) AS Diff FROM  User_table WHERE date=? GROUP BY Category";
+
+        Cursor res = db1.rawQuery(queryString,selectionArgs);
+        return res;
+    }
+    public Cursor getWeekData(){
+        Log.v(TAG,"enteredWeek");
+        SQLiteDatabase db2=this.getReadableDatabase();
+        String todayDate=new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        String oneWeekDate=getCalculatedDate("yyyy-MM-dd",-7);
+        Log.v(TAG,"enteredWeek"+oneWeekDate+" "+todayDate);
+//        String qString = "SELECT Category, SUM(e_time-s_time) AS Diff FROM  User_table WHERE date=? GROUP BY Category";
+        String qString= "SELECT Category, SUM((strftime('%s',e_time)-strftime('%s',s_time))/60) AS Diff FROM User_table WHERE date BETWEEN'"+oneWeekDate+"'AND'"+todayDate+"'"+"GROUP BY Category";
+//        String qString= "SELECT * FROM User_table WHERE date =?";
+//        String[] aArgs =new String[]{todayDate,oneWeekDate};
+
+        Cursor c=db2.rawQuery(qString,null);
+
+        return c;
+    }
+    public static String getCalculatedDate(String dateFormat, int days) {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat s = new SimpleDateFormat(dateFormat);
+        cal.add(Calendar.DAY_OF_YEAR, days);
+        Log.v(TAG,"enteredWeeks"+s.format(new Date(cal.getTimeInMillis())));
+        return s.format(new Date(cal.getTimeInMillis()));
+    }
+    public Cursor getBarData(){
+        SQLiteDatabase db3=this.getReadableDatabase();
+        String myToday=new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String[] Args =new String[]{myToday};
+        String quString = "SELECT Category, Rating, s_time, e_time FROM  User_table WHERE date=?";
+        Cursor b=db3.rawQuery(quString,Args);
+        return b;
+    }
+
+    public Cursor getPrevData(){
+        SQLiteDatabase db4=this.getReadableDatabase();
+        String myPrevToday=getCalculatedDate("yyyy-MM-dd",-1);
+        String[] Args =new String[]{myPrevToday};
+        String quString = "SELECT Category, Rating, s_time, e_time FROM  User_table WHERE date=?";
+        Cursor b1=db4.rawQuery(quString,Args);
+        return b1;
     }
 }
+

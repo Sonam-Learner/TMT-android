@@ -1,4 +1,6 @@
 package com.example.android.tmt;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -25,13 +27,12 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
 
 
-public class SummaryActivity extends AppCompatActivity {
+public class PreviousActvity extends AppCompatActivity {
     private ImageButton weekSummaryButton;
-    private ImageButton prevSummaryButton;
+    private ImageButton nextSummaryButton;
     Cursor cursor;
     DatabaseHelper myDb;
     BarChart barChart;
-    int statusCount;
     ArrayList<String> str = new ArrayList<String>();
     ArrayList<Integer> rating=new ArrayList<>();
     ArrayList<String> start=new ArrayList<>();
@@ -45,21 +46,22 @@ public class SummaryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_summary);
         myDb=new DatabaseHelper(this);
         weekSummaryButton = (ImageButton)findViewById(R.id.week_Button);
-        prevSummaryButton = (ImageButton)findViewById(R.id.previous_Button);
-        prevSummaryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Context context = SummaryActivity.this;
-                Class destActivity = PreviousActvity.class;
-                Intent intent = new Intent(context, destActivity);
-                startActivity(intent);
-            }
-        });
+        nextSummaryButton = (ImageButton)findViewById(R.id.next_Button);
         weekSummaryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Context context = SummaryActivity.this;
+                Context context = PreviousActvity.this;
                 Class destActivity = WeekActivity.class;
+                Intent intent = new Intent(context, destActivity);
+                startActivity(intent);
+
+            }
+        });
+        nextSummaryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Context context = PreviousActvity.this;
+                Class destActivity = SummaryActivity.class;
                 Intent intent = new Intent(context, destActivity);
                 startActivity(intent);
 
@@ -78,7 +80,7 @@ public class SummaryActivity extends AppCompatActivity {
     protected void onStart()
     {
         super.onStart();
-        cursor=myDb.getBarData();
+        cursor=myDb.getPrevData();
         getCursor();
         int count = rating.size();
         if (count==0){
@@ -141,15 +143,15 @@ public class SummaryActivity extends AppCompatActivity {
 
     public class MyXAxisValueFormatter implements IAxisValueFormatter {
 
-        private String[] mValues;
+        private String[] myValues;
 
         public MyXAxisValueFormatter(String[] values) {
-            this.mValues = values;
+            this.myValues = values;
         }
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return mValues[(int) value];
+            return myValues[(int) value];
         }
 
     }
@@ -177,10 +179,10 @@ public class SummaryActivity extends AppCompatActivity {
 
             while (cursor.moveToNext()){
                 if(categories.contains(cursor.getString(CategoryColumnIndex))==false){
-                rating.add(Integer.parseInt(cursor.getString(RatingColumnIndex)));
-                categories.add(cursor.getString(CategoryColumnIndex));
-                start.add(cursor.getString(StartColumnIndex));
-                end.add(cursor.getString(EndColumnIndex));}
+                    rating.add(Integer.parseInt(cursor.getString(RatingColumnIndex)));
+                    categories.add(cursor.getString(CategoryColumnIndex));
+                    start.add(cursor.getString(StartColumnIndex));
+                    end.add(cursor.getString(EndColumnIndex));}
 
             }
 
@@ -189,5 +191,5 @@ public class SummaryActivity extends AppCompatActivity {
             cursor.close();
         }
     }
-   }
+}
 
